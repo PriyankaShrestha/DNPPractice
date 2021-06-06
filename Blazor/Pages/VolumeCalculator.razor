@@ -1,0 +1,71 @@
+﻿@page "/VolumeCalculator"
+@using WebApi.DataContainer
+@using Blazor.Data
+@inject IVolumeService VolumeService
+
+<h3>Volume Calculator</h3>
+
+<EditForm Model="@_volumeResult" OnValidSubmit="@Calculate">
+                <DataAnnotationsValidator/>
+<ValidationSummary/>
+
+<div class="form-group row">
+    <label class="col-sm-2 col-form-label">Select Type:</label>
+    <select @onchange="@((arg) => SelectedType(arg))">
+        <option>Cylinder</option>
+        <option>Cone</option>
+    </select>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-2 col-form-label">Height:</label>
+    <InputNumber class="col-sm-6 form-control" @bind-Value="@_volumeResult.Height"/>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-2 col-form-label">Radius:</label>
+    <InputNumber class="col-sm-6 form-control" @bind-Value="@_volumeResult.Radius"/>
+</div>
+
+<div style="color:green">@CalculatedVolume</div>
+
+<div style="color:red">@Message</div>
+
+                <button disabled="@Loading" class="btn btn-light">Calculate
+                    @if (Loading) 
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                </button>
+                
+</EditForm>
+
+
+@code {
+    private VolumeResult _volumeResult = new VolumeResult();
+    private string type;
+    private string Message;
+    private bool Loading;
+    private string CalculatedVolume;
+
+    private async Task Calculate()
+    {
+        try
+        {
+            Loading = true;
+            VolumeResult volume = await VolumeService.CalculateVolume(_volumeResult.Height, _volumeResult.Radius, type);
+            CalculatedVolume = $"Result: {volume.Volume}";
+            Loading = false;
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+            Loading = false;
+        }
+    }
+
+    private void SelectedType(ChangeEventArgs e)
+    {
+        type = (string)e.Value;
+    }
+}

@@ -1,0 +1,56 @@
+﻿@page "/History"
+@using WebApi.DataContainer
+@using Blazor.Data
+@inject IVolumeService VolumeService
+
+<h3>History</h3>
+@if (results == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else if (!results.Any())
+{
+    <p>
+        <em>No calculations done so far!</em>
+    </p>
+}
+else
+{
+    <div style="color:red">@Message</div>
+    <TableTemplate Items="results">
+        <TableHeader>
+            <th>Id</th>
+            <th>Type</th>
+            <th>Height</th>
+            <th>Radius</th>
+            <th>Volume</th>
+        </TableHeader>
+        
+        <RowTemplate Context=item>
+            <td>@item.Id</td>
+            <td>@item.Type</td>
+            <td>@item.Height</td>
+            <td>@item.Radius</td>
+            <td>@item.Volume</td>
+        </RowTemplate>
+    </TableTemplate>
+}
+
+@code {
+    private IList<VolumeResult> results = new List<VolumeResult>();
+    private string Message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            results = await VolumeService.GetHistory();
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+        }
+    }
+}

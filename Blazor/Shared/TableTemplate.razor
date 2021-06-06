@@ -1,0 +1,30 @@
+﻿@typeparam TItem
+
+<div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-stripped mb-0">
+        <thead class="bg-info">
+        <tr>
+            @TableHeader
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                @RowTemplate(item)
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+    
+    [Parameter]
+    public IList<TItem> Items { get; set; }
+    
+    [Parameter]
+    public RenderFragment<TItem> RowTemplate { get; set; }
+}
